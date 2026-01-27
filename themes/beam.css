@@ -5,6 +5,16 @@
 
 @import "default";
 
+@font-face {
+  font-family: 'CMU Sans Serif';
+  src: local('CMU Sans Serif'), 
+       local('Computer Modern Unicode Sans'),
+       url('/usr/share/fonts/cmu/cmunss.otf') format('opentype'); /* Adjust path if manual install */
+  font-weight: normal;
+  font-style: normal;
+  font-variant-numeric: lining-nums;
+}
+
 :root {
   font-family: "CMU Sans Serif", "Segoe UI", Helvetica, sans-serif;
   --main: #1f38c5;
