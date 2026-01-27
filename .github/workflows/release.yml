@@ -1,0 +1,39 @@
+name: Build and update releases
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # for uploading to releases
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Compile LaTeX
+        uses: xu-cheng/latex-action@v3 #TBE UPDATE THIS TO SHA
+        with:
+          root_file: main.tex
+
+      - name: Build marp slides
+        uses: docker://marpteam/marp-cli:latest
+        with:
+          args: slides.md -o slides.html
+        env:
+          MARP_USER: root:root
+
+      - name: Upload to Latest Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest Continuous Build
+          body: "Automated build from the latest push to main."
+          files: |
+            main.pdf
+            slides.html
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
