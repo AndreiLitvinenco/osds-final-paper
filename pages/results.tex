@@ -1,0 +1,34 @@
+\section{Experiments and Results}
+
+In this section you depict the manifestation of the vulnerabilities and the effect of the proposed solutions on dampening the attack effect.
+
+Look at our experiments in 
+%Figure~\ref{fig:experiment1}
+and
+%Table~\ref{tab:experiment2}
+%---------------
+\begin{figure}[ht]
+\centering
+%\includegraphics[width=0.9\linewidth]{experiment1}
+\caption{Unsupervised DL with error threshold}
+\label{fig:experiment1}
+\end{figure}
+%---------------
+
+%------------
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{r l l}
+
+% Table head
+Method & Dictionary & Representations \\
+\hline
+% Contents
+MOD & $O(m^3N+m^6)$ & $O(m^5N)$ \\
+TMOD & $O(mN^2 + m^3)$ & $O(m^4N)$ \\
+SuKro & $O(m^3N+m^6)$ & $O(m^5N)$ \\
+\end{tabular}
+\end{center}
+\caption{Total number of instructions for various methods.}
+\label{tab:experiment2}
+\end{table}
