@@ -30,7 +30,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
-          name: Latest Continuous Build
+          name: Latest
           body: "Automated build from the latest push to main."
           files: |
             main.pdf
