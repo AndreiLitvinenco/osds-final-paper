@@ -22,7 +22,7 @@ jobs:
       - name: Build marp slides
         uses: docker://marpteam/marp-cli:latest
         with:
-          args: slides.md -o slides.html
+          args: --theme-set themes --html slides.md -o slides.html
         env:
           MARP_USER: root:root
 
