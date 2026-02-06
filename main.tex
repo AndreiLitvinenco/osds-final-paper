@@ -1,4 +1,4 @@
-\documentclass[a4paper,10pt,twocolumn,english]{article}
+\documentclass[a4paper,9pt,twocolumn,english]{extarticle}
 %---------------------------------------------------------
 \usepackage{babel}
 \usepackage[utf8]{inputenc}
@@ -7,11 +7,16 @@
 \usepackage{graphicx}
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
 \usepackage{bm}
+\usepackage{titling}
+\usepackage[left=1.68cm, right=1.68 cm, top=1.75cm, bottom=1.75cm]{geometry}
+\setlength{\columnsep}{1cm}
 %---------------------------------------------------------
 % Equation reference, e.g. (1)
 \newcommand{\eref}[1]{(\ref{#1})}
 %---------------------------------------------------------
-\title{Virtual machines through the OS lens}
+\pretitle{\begin{center}\Large\bfseries}
+    \posttitle{\end{center}}
+\title{\huge Virtual machines through the OS lens}
 
 \author{
     Andrei Litvinenco\\
@@ -25,10 +30,12 @@
 
 \input{pages/abstract}
 \input{pages/introduction}
-\input{pages/technical_problem}
-\input{pages/solution}
-\input{pages/results}
-\input{pages/conclusion}
+\input{pages/section1.tex}
+\input{pages/section2.tex}
+\input{pages/section3.tex}
+\input{pages/section4.tex}
+\input{pages/section5.tex}
+\input{pages/conclusion.tex}
 
 \bibliography{mybib}
 \bibliographystyle{plain}

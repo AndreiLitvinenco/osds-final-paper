@@ -1,0 +1,16 @@
+\section{Virtualizing x86 paging}
+The hypervisor must regulate address translation on the
+processor by effectively enforcing an additional level of
+address translation when guests are active in order to
+offer security and isolation between guests and the
+hypervisor. The guest's perception of physical memory is
+mapped to the system's perception of physical memory
+through this extra translation layer. Para-virtualized
+guests allow both the guest and the hypervisor to use
+para-virtual interfaces, which lowers the overhead and
+complexity of the hypervisor while virtualising x86
+paging. The hypervisor must, however, fully virtualise
+x86 address translation for guests that have not been
+altered. Significant overheads could result from this,
+which we go over in the parts that follow. 
+

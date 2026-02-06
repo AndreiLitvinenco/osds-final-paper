@@ -1,0 +1,28 @@
+\section{Execution of modified guest OS's}
+One method of execution of modified guest OS’s is by
+virtualisation at the operating system level. Using this
+method, the physical server is virtualised at the operating
+system level. In this case, the host operating system is a
+modified kernel that permits the operation of several
+isolated containers, sometimes referred to as virtualised
+servers, virtual private servers, or when it comes to the
+world of BSD, they are called jails. Every container is an
+instance that uses the same host operating system kernel.
+OpenVZ, Solaris Zones, and Linux-VServer are a few
+examples that are using this method. The
+implementations of this technology are widely utilised
+and exhibit low overhead. The primary disadvantage of
+para-virtualization is that it does not support multiple
+kernels. Paravirtualization is the method that substitutes
+the instructions of the actual machine's instruction set
+architecture with a unique set of instructions known as
+Hypercalls. Its low virtualisation overhead is a plus.
+Denali \cite{citation_11}, Xen \cite{citation_5}, and Hyper-V \cite{citation_12} are a few
+examples of para-virtualization solutions. In order to
+allow guest operating systems to operate at higher levels,
+the VMM (also known as the Hypervisor) in the x86
+architecture operates directly above the actual hardware
+(Ring 0). The main disadvantage of this strategy, despite
+its support for multiple kernels, is that the guest OS’s
+kernels must be altered in order to fully utilise the
+Hypercalls. 

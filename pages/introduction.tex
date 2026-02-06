@@ -1,8 +1,64 @@
 \section{Introduction}
-
-In this section you introduce the problem and existing research or similar results in the field.
-
-When citing remember you can use the quotes button from \url{https://scholar.google.com} to get the bibtex entry.
-
-In this article we are going to investigate side-channel attacks~\cite{kocher96_timing}
-with focus on cache implementations~\cite{lipp18_meltdown}.
+By dividing the resources among operating systems,
+virtualisation is a technology that has been used
+extensively over the past ten years to share the
+capabilities of physical computers. IBM launched a
+project in 1964 that helped define the meaning of the term
+"Virtual Machines" (VM) \cite{citation_1}. The CP/CMS system was
+the name for the original project, which was later changed
+to Virtual Machine Facility. The Control Program
+component started as an operating system back then that
+allowed a computer to function as several copies of the
+machine. Every copy, instance of virtual machine had its
+own operating system namely the CMS component. The
+concept of low level virtualisation was introduced as
+described by IBM’s project and also the community effort
+forwarded by independent researchers. By the middle of
+the 1970s, two researchers by the name Goldberg and
+Popek released multiple publications \cite{citation_2}\cite{citation_3} that provided
+a comprehensive understanding of the principles and
+advantages associated with the virtualisation technology.
+During the next years the interest towards this new
+technology decreased until VMware Inc. developed its
+own product called VMware Virtual Platform for the x86-
+32 architecture back in the year 1999 \cite{citation_4}. \newline \newline
+A Virtual Machine Monitor, abbreviated to VMM, called
+Xen \cite{citation_5} introduced the possibility of a physical computer
+to boot into many operating systems within the x86-32
+architecture. Its origins trace back to the academics, more
+precicesly the University of Cambridge’s Computer
+Laboratory. The Xen project is an open source
+community project that is now actively developed by a
+community with the same name. \newline \newline
+The VMM implementations addressed this problem by
+trapping privileged instructions with low-level
+sophisticated solutions because the x86-32 architecture
+was not built to facilitate full virtualisation in the way that
+Popek and Goldberg outlined \cite{citation_3}. Nonetheless,
+virtualisation is supported by the latest versions of the
+AMD processor through its virtualisation solution
+"Pacifica" \cite{citation_7}, Intel x86-32 and Itanium architectures with
+extensions named VT-x for x86-32 and VT-i for Itanium
+\cite{citation_6}. These features are now utilised by the majority of
+virtualisation technologies, including Xen and VMware
+\cite{citation_8}. \newline \newline
+In a physical computer, the operating system is usually
+operated in kernel mode while user applications are run in
+user mode. In order for the operating system to access the
+entire set of instructions, both privileged and unprivileged
+of the actual processor, processors have different levels of
+execution. Applications operating in the unprivileged user
+mode are therefore unable to directly access the
+privileged instructions. The OS's kernel mode operates in
+Ring 0 of the x86 architecture's four execution modes, or
+rings, whereas the user mode operates in Ring 3. Rings 1
+and 2 can be utilised for further levels of access,
+depending on the operating system. \newline \newline
+The execution of whole operating systems can currently
+be supported by a number of virtualisation approaches. In
+contrast to Process VMs, such as those provided by the
+Java Virtual Machine(JVM), VMs for the execution of
+guest operating systems are also known as System VMs
+\cite{citation_10}. Going forward with the paper, I’ll provide an
+overview of the virtualisation strategies from an operating
+systems perspective in the following.

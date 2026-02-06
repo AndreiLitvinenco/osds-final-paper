@@ -1,0 +1,103 @@
+\section{Classical Virtualization Theory}
+According to the papers written by Popek and Goldberg
+back in 1974 \cite{citation_17}, system software must meet three
+requirements in order to qualify as a VMM:
+\begin{enumerate}
+    \item \textbf{Faithfulness}. Except for timing effects, software
+    on the VMM runs just like it does on hardware.
+    \item \textbf{Performance}. Without the VMM's assistance,
+    the hardware carries out the vast majority of
+    guest commands.
+    \item \textbf{Security}. All hardware resources are managed
+    by the VMM. Trap-and-emulate, a specific
+    VMM implementation approach, was so
+    common in 1974 that it was thought to be the
+    only workable virtualisation technique.
+  \end{enumerate}
+Over the years, there has been considerable confusion
+caused by the informal linking of what can be virtualized
+with the capacity to utilise trap-and-emulate, even though
+Popek and Goldberg did not rule out the use of other
+approaches. To avoid this misunderstanding, an
+architecture that can be virtualised using only trap-andemulate will be referred to as classically virtualizable.
+According to Popek and Goldberg's criteria, x86 can be
+virtualised using the methods outlined in Section 2, even
+though it is not traditionally virtualizable in this sense.
+The key concepts from traditional VMM
+implementations, de-privileging, shadow structures, and
+traces, are reviewed in this section. 
+\subsection{De-privileging}
+It is possible to make any instructions that read or write
+privileged state to trap when they are run in an
+unprivileged context in a classically virtualizable
+architecture. The VMM protects structures that the
+instructions reach, such as the address range of a
+memory-mapped I/O device, might occasionally cause the
+traps, as can the instruction type itself, such as an out
+instruction. Guest operating systems are directly executed
+by a traditional VMM, although with fewer privileges.
+The VMM emulates the trapping instruction against the
+virtual machine state after intercepting traps from the deprivileged guest. It is simple to confirm that the final
+VMM satisfies the Popek and Goldberg requirements,
+and this method has been thoroughly documented in the
+literature \cite{citation_10}\cite{citation_18}\cite{citation_19_book}. 
+\subsection{Primary and shadow structures}
+A virtual system's privileged state is by definition
+different from the underlying hardware. Despite this
+difference, the VMM's primary role is to deliver an
+execution environment that satisfies the guest's
+expectations. The VMM uses guest-level primary
+structures to derive shadow structures in order to achieve
+this. The VMM keeps a picture of the guest register and
+refers to that image in instruction emulation as the guest
+operations trap. This makes handling on CPU privileged
+state, such as the page table pointer register or processor
+status register, simple. On the other hand, page tables and
+other off CPU privileged data might be stored in RAM. In
+this situation, trapping instructions might not always
+correspond with guest accesses to the privileged state. \newline \newline
+For instance, because they encode mappings and
+permissions, guest page table entries (gPTEs) are in a
+privileged state. Every guest virtual memory reference is
+dependent on the permissions and mappings stored in the
+relevant gPTE, so dependencies on this privileged state
+are free of traps. Any store in the guest instruction stream
+has the ability to change this in memory privileged state,
+or it may even be changed implicitly as a result of a DMA
+I/O transaction. Similar challenges arise with memory
+mapped I/O devices, since reads and writes to this
+privileged data might come from nearly any memory
+operation in the guest instruction stream. 
+\subsection{Memory traces}
+VMMs usually use hardware page protection methods to
+trap access to in memory primary structures in order to
+preserve coherency of shadow structures. For example,
+guest PTEs may be write protected if shadow PTEs have
+been created for them. In general, memory mapped
+devices need to be protected for both writing and reading.
+This technology of page protection is called tracing. Like
+privileged instruction faults, trace faults are handled by
+classical VMMs by decoding the guest instruction that is
+causing the fault, simulating its impact in the primary
+structure, and then propagating the change to the shadow
+structure.
+\subsection{Hardware VMM implementation}
+VMware’s hardware VMM's (or any VMM adopting the
+extensions) structure is fundamentally prescribed by the
+hardware extensions, which offer a comprehensive
+virtualisation solution. When executing a guest in
+protected mode, the VMM runs vmrun after filling in a
+VMCB with the guest's current state. When a guest quits,
+the VMM reads the VMCB fields that specify the exit
+conditions and vectors to the relevant emulation code. A
+significant portion of this emulation code is shared with
+the VMM program. Peripheral device models, guest
+interrupt delivery code, and several infrastructure
+functions like logging, synchronisation, and host OS
+interaction are all included. The hardware VMM also
+inherits the software VMM's use of the shadowing
+mechanism outlined in Section 5.2, as current
+virtualisation hardware does not explicitly enable MMU
+virtualisation. 
+
+
