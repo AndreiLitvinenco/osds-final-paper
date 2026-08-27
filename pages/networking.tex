@@ -1,0 +1,39 @@
+\section{Virtual networks, architecture and implementation}
+Beside the virtualisation of the Central Processing Unit (CPU), the memory and the storage a hypervisor also has to facilitate the interconection of the virtual machines with themselves, the host network and the internet. In Type II virtualized enviroments, such as Oracle VirtualBox, the network connection is managed by Virtual Network Interface Card (vNICs), virtual switches and in some cases virtual routers. \cite{implementation-of-internetworking-with-host-internet-in-oracle-virtualbox-guest-virtual-machines.pdf} The hypervisor emulates physical cards such as AMD PCNet, PCI II/III, Gigabit Intel PRO/1000 MT Desktop/Server or paravirtualized adapters such as virtio-net which asures the compatibility for the guest virtual machine.
+
+\subsection{Network mode types}
+The virtual management platform, Oracle VirtualBox, allows the following 4 network mods for the configuration of virtual networks, each having both advantages and disadvantages.
+
+\begin{table*}[htbp]
+    \centering
+    \caption{Communication and accesibility matrix of the virtual network modes \cite{implementation-of-internetworking-with-host-internet-in-oracle-virtualbox-guest-virtual-machines.pdf}}
+    \begin{tabular}{l c c c c c}
+        \toprule
+        \textbf{Network Modes} & \textbf{VM $\rightarrow$ VM} & \textbf{VM $\rightarrow$ Host} & \textbf{Host $\rightarrow$ VM} & \textbf{VM $\rightarrow$ Internet} & \textbf{Internet $\rightarrow$ VM} \\
+        \midrule
+        %NAT & No & Yes & No & Yes \\
+        %NAT Network & Yes & Yes & No & Yes \\
+        %Bridged & Yes & Yes & Yes & Yes \\
+        %Host-Only & Yes & Yes & Yes & No \\
+
+        NAT & No & Yes & Only with PF & Yes & Only with PF\\
+        NAT Network & Yes & Yes & Only with PF & Yes & Only with PF \\
+        Bridged & Yes & Yes & Yes & Yes & Yes \\
+        Host-Only & Yes & Yes & Yes & No & No \\
+        Internal & Yes & No & No & No & No \\
+        \bottomrule
+    \end{tabular}
+\end{table*}
+
+\begin{enumerate}
+    \item \textbf{NAT (Network Address Translation)}: Is the default configuration mode. It allows the virtual machine to recieve a private IP address from the hypervisor's DHCP. Outboud traffic towards the host network is translated by the hypervisor using the host machine's IP. When a virtual machine is using this mode it can access the internet and the host machine but it is completly invisible from the outside. Moreover, other virtual machines within the same host can't comunicate directly with one another if no port mapping is configured via port forwarding. \cite{implementation-of-internetworking-with-host-internet-in-oracle-virtualbox-guest-virtual-machines.pdf}
+
+    \item \textbf{NAT Network (Rețea NAT)}: Functions similarly to the NAT mode but allows the creation of an internal virtual switch in which all the connected virtual machines are assigned IP addresses from the same subnet in order to be able to comunicate between themselves, while also benefiting from the network address translation for the outbound traffic towards the internet. \cite{implementation-of-internetworking-with-host-internet-in-oracle-virtualbox-guest-virtual-machines.pdf}
+    
+    \item \textbf{Bridged Networking (Conectare punte)}: In this mode the hypervisor uses a filtering driver, commonly known as Net Filter Driver, installed on the host Network Interface Card. The guest vNIC is connected directly to the physical network of the host machine. \cite{implementation-of-internetworking-with-host-internet-in-oracle-virtualbox-guest-virtual-machines.pdf}
+
+    \item \textbf{Host-Only Networking (Rețea privată de gazdă)}: In this mode a virtual adapter is created that functions as loopback for the host virtual machine creating a completly private and isolated network from a physical point of view. Virtual machines can comunicate with one another and with the host machine but they can not acces the physical network or the internet, offering a strict enviroment for testing malware applications. \cite{implementation-of-internetworking-with-host-internet-in-oracle-virtualbox-guest-virtual-machines.pdf}
+    \end{enumerate}
+
+\subsection{I/O virtualization mapping}
+When modern technologies such as Direct Device Assignment, also known as Passthrough PCI, or Single Root I/O Virtualisation, the hypervisor has to program a special hardware unit named Input-Output Memory Management Unit such as Intel VT-d \cite{smith2005virtual}. IOMMU functions as a special Memory Management Unit for input-output devices. It translates gPA addresses made by the network card or the disk controller in physical addresses (hPA) bypassing software interventions by the hypervisor within DMA transit. This process eliminates the performance penalty of the I/O, gaining much higher speeds from the physical links capacity \cite{smith2005virtual}.
