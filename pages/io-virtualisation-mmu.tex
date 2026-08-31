@@ -1,0 +1,18 @@
+\section{I/O subsystem virtualisation and device mapping}
+The input-output virtualisation process shows to be a challenging endevour due to the vast amount of pheripheral and the need to translate memory references used by Direct Memory Access (DMA) controllers \cite{smith2005virtual}.
+
+Inside a guest virtual machine, all processes use translated logical or virtual addresses, however physical I/O devices, DMA controllers, and channel processes operates independently of the processor's Memory Management Unit (MMU) and require real physical addresses to peform direct data transfers into RAM \cite{goldberg1973architectural}.
+
+Because disk controllers or network cards cannot dynamically traverse the guest's page tables during a bus transfer, the problem of address absolution arises as any more addresses stored by a guest program in the registers of a network or storage controller must be intercepted and converted into the host's real physical addresses by the hypervisor before the physical I/O hardware is put into operation \cite{goldberg1973architectural, smith2005virtual}.
+
+\begin{figure*}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{images/diagrama-virtualizare-io.png}
+    \caption{I/O virtualization paradigms and execution paths.}
+    \label{fig:io-virtualisation-diagram}
+\end{figure*}
+
+The control and address translation flow proceeds as follows \cite{smith2005virtual}. When the Guest OS attempts to initiate an I/O operation, it executes a privileged Start I/O instruction. Because the Guest OS runs downgraded, Ring 1/3, the instruction generates a hardware trap in the hypervisor. The hypervisor takes control and accesses the channel program written by the guest. It sequentially traverses all CCW instructions and performs the 'absolutization' process: it translates each virtual buffer address from the CCW into absolute real physical addresses of the host using shadow page tables ($f \circ \phi$). To avoid Time-of-Check to Time-of-Use vulnerabilities, where the virtual machine could modify the addresses in the CCW during the execution of the hardware transfer, the hypervisor copies the entire CCW program into a private, protected memory area, Shadow CCW.
+
+
+In historic systems that are based on channels, such as IBM VM/370, I/O operations were virtualised by running channel programs made of Channel Command Words (CCW) \cite{smith2005virtual}. Such process can be seen in the figure \ref{fig:io-virtualisation-diagram}.
