@@ -1,0 +1,23 @@
+\section{Virtual memory and pagination in virtual enviroments}
+Memory virtualisation represents one of the biggest bottlenecks when it comes to hypervisor's performance due to the fact that this process require the translation of the memory addresses on two separated levels. On one level the hypervisor has to translate the memory addresses between Guest Virtual Address to Guest Physical Adress ($gVA \rightarrow gPA$) and then it has to translate the addresses further between Guest Physical Address to Host Physical Address ($gPA \rightarrow hPA$) \cite{agile-paging}. 
+
+\subsection{Nested paging vs Shadow page tables}
+In order this double translation, the hypervisors make use of two architectures.
+    \begin{enumerate}
+        \item \textbf{Shadow paging (Software)}: The hypervisor builds a shadow page table that directly maps the guest's virtual addresses to the host's real physical addresses ($gVA \rightarrow hPA$) \cite{agile-paging}. This way the processor's hardware memory management unit (MMU) is pointed directly at this table. An advantage of this architecture is that if a translation lookaside buffer (TLB) misses on the guest system, it executes a one dimensional page walk directly in the shadow page table which require only 4 physical memory references. On the other hand a disadvantage is that if a modification is made to the page tables by the guest operating system, this operation is very costly. Because of that the hypervisor must have to write protect all guest page tables in the shadow page table. Therefore any updates from the guest generates a software trap (VMexit) requiring thousands of CPU cycles for syncronisation.
+        \item \textbf{Nested Paging (Hardware)}: Technologies such as Intel Extended Page Tables or AMD Rapid Virtualisation Indexing provide hardware assistance by mantaining two sets of page tables in parallell \cite{agile-paging}. The guest operating system can modify its own page tables freely without generating software traps or VMexit or requiring interventions from the hypervisor. On the other hand a single TLB miss requires two dimensional page walk. In order to translate each level of the 4 levels of the guest table, the hardware must traverse all 4 levels of the host's extanded page table (EPT). This operation generates a mathematical formula of a maximum complexity for memory references:
+        \begin{equation} \label{eq:2dwalk}
+        \begin{split}
+        &\text{2D Walk Memory References} \\
+        &\quad = N_{\text{guest}} \times N_{\text{host}} + N_{\text{guest}} + N_{\text{host}} \\
+        &\quad = 4 \times 4 + 4 + 4 = 24
+        \end{split}
+        \end{equation}
+        A total of 24 memory references \eref{eq:2dwalk} for a single addresse translation massively decreases the performance of applications with large and dynamic datasets. 
+    \end{enumerate}
+
+\subsection{Agile paging}
+In order to transcend this compromise, \emph{Gandhi et al.} proposed the \textbf{Agile Paging} technology \cite{agile-paging}. Starting from the observation that the dynamics of updating page tables are extremly bimodal which means that the upper levels (PML4, PDPT, PD) remain static after initial configuration while the last level, the page table consisting of leaves changes extremely dynamic. Agile paging utilises a spatio-temporal hybrid architecture which begins the translation in the shadow paging mode for the upper levels of the page table to ensure a fast page walk. It then uses a hardware extended walker and a special switching bit is placed in the shadow page table entries as an entry. When the processor encounters this bit, it dynamically switches the translation process into nested paging mode directly for the leaves of the page table. In the end the hypervisor monitors the behavior, if a memory area undergoes more than 2 writes in a short interval, those leaves are moved to a nested mode, allowing free writing without a software trap or VMexit. If instead the area becomes inactive, it is brought back to the shadow mode to accelerate subsequent page walks \cite{agile-paging}. This method reduses the number of memory accesses per Translation Lookaside Buffer miss to 4.8 achieving performance with just 4.
+
+\subsection{Remote paging}
+test
