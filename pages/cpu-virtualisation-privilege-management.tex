@@ -1,0 +1,22 @@
+\section{CPU virtualisation and privilege management}
+Processors in the x86 family implement four hardware protection rings, from Ring 0, the most privileged, reserved for the operating system kernel, to Ring 3, the least privileged, intended for user applications. Traditionally, protection rings ensure memory and resource isolation between user space and kernel space.
+
+\subsection{Ring deprivileging}
+To ensure complete control over system resources, the Virtual Machine Monitor must be the only software running with maximum privileges in Ring 0. This requires a technique called Ring Deprivileging for the guest virtual machines \cite{king.pdf, reuben2007virtual}. The VMM runs in Ring 0. The guest operating system is forced to run in a less privileged ring, such as Ring 1, in paravirtualized hypervisors like Xen, or directly in Ring 3, in hosted, Type II hypervisors. The user applications inside the VM continue to run in Ring 3, but they are isolated from their own Guest OS through software mechanisms managed by the VMM.
+
+When the Guest OS attempts to execute a privileged instruction. for example, modifying page tables or interrupts, the lack of physical privileges, because it does not run in Ring 0, forces the hardware processor to generate a General Protection Fault. This exception acts as a trap that instantaneously transfers control to the hypervisor, in Ring 0. The hypervisor analyzes the instruction that generated the trap, safely simulates its effect within the context of that virtual machine, and returns control to the guest in the deprivileged ring \cite{king.pdf, popek1974formal}.
+
+\subsection{Hardware assised virtualisation, Intel VT-x}
+To eliminate the software complexity of the ring deprivileging technique, Intel and AMD introduced native hardware support for virtualization \cite{vm-security.pdf, vm-attack-vectors}. In the Intel VT-x architecture, the processor operates in two parallel operating modes, each having its own complete set of 4 protection rings (Rings 0-3):
+    \begin{enumerate}
+        \item \textbf{VMX Root Operation}: The fully privileged operating mode in which the Virtual Machine Monitor (VMM) runs. The VMM has unrestricted access to all physical hardware resources and runs in Ring 0 Root.
+        \item \textbf{VMX Non-Root Operation}: The operating mode dedicated to virtual machines. Although running in Non-Root mode, the guest operating system runs in Ring 0 Non-Root, having the illusion that it holds complete control of the processor, while its applications run in Ring 3 Non-Root.
+    \end{enumerate}
+The transition between these two modes is managed directly by the hardware through a special data structure called the VMCS, Virtual Machine Control Structure, stored in physical memory and configured by the hypervisor. The VMCS contains the host processor state, the guest state, and a series of control bits that determine which events or instructions will generate a forced exit from the virtual machine.
+
+The dynamics of VT-x operation are described by two fundamental actions:
+
+    \begin{enumerate}
+        \item \textbf{VM Entry}: The VMM executes the hardware instruction \emph{vmlaunch}, at startup or \emph{vmresume}, upon resuming execution. The processor automatically switches from VMX Root mode to VMX Non-Root mode, loads the guest state from the VMCS structure, and begins running the Guest OS in Ring 0 Non-Root.
+        \item \textbf{VM Exit}: When the Guest OS executes a sensitive instruction configured to be intercepted, such as access to I/O ports, reading control registers, or generating interrupts, the processor immediately suspends execution in a secure manner, saves the current guest state in the VMCS, loads the VMM state, and switches back to VMX Root mode, Ring 0. The hypervisor analyzes the reason for the exit, indicated by the hardware error codes in the VMCS, emulates the correct behavior, and re-initiates a VM Entry \cite{reuben2007virtual}.
+    \end{enumerate}
