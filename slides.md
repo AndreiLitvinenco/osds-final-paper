@@ -137,10 +137,10 @@ Software-based ring deprivileging is complex and slow, leading Intel and AMD to 
 
 # CPU privilage management
 ## Protection rings and privileges
-* x86 architecture uses protection rings, prioritizing Ring 0 for OS kernel and Ring 3 for users.
-* Ring deprivileging forces the guest OS into a lower ring allowing the hypervisor to safely intercept hardware traps.
-* Intel VT-x hardware assist introduces VMX Root and HMX Non-Root operating modes.
-* The virtual machine control structure rapidly handles state transitions via VMentry and  VMexit calls
+- x86 architecture uses protection rings, prioritizing Ring 0 for OS kernel and Ring 3 for users.
+- Ring deprivileging forces the guest OS into a lower ring allowing the hypervisor to safely intercept hardware traps.
+- Intel VT-x hardware assist introduces VMX Root and HMX Non-Root operating modes.
+- The virtual machine control structure rapidly handles state transitions via VMentry and  VMexit calls
 
 ---
 # CPU privilege management
@@ -162,19 +162,19 @@ Ring 3 (Least Privileged): Userspace unde se afla aplicatii precum Chrome, Word,
 <!-- Memory virtualization is a primary performance bottleneck because it requires a two-step translation: translating the Guest Virtual Address to a Guest Physical Address, and then translating that Guest Physical Address to the actual Host Physical Address. Hypervisors handle this using two main architectures. Shadow Paging uses software to map guest virtual addresses directly to host physical addresses. It is fast for lookups, requiring only 4 memory references, but guest page table updates trigger costly software traps. -->
 # Memory virtualisation
 ## Shadow paging
-* For unmodified guests, the VMM must fully virtualize x86 paging.
-* Maps $gVA \rightarrow hPA$ via shadow pages.
-* The VMM must "trace" or trap every time the Guest OS tries to update its page tables to keep the shadow tables in sync.
-* Extremly fast for TLB misses, requiring simple 1D page walks composed of only 4 memory references.
-* However it requires write-protecting guest page tables. Any guest update generates a costly software trap (VMexit).
+- For unmodified guests, the VMM must fully virtualize x86 paging.
+- Maps $gVA \rightarrow hPA$ via shadow pages.
+- The VMM must "trace" or trap every time the Guest OS tries to update its page tables to keep the shadow tables in sync.
+- Extremly fast for TLB misses, requiring simple 1D page walks composed of only 4 memory references.
+- However it requires write-protecting guest page tables. Any guest update generates a costly software trap (VMexit).
 
 ---
 <!-- Nested Paging relies on hardware to maintain two parallel page tables. Guests can update their tables freely, but a single Translation Lookaside Buffer miss forces the hardware into a massive 24-reference, two-dimensional page walk. -->
 # Memory virtualisation
 ## Nested paging
-* Uses hardware asissted parallel page tables, such as Intel EPT, allowing the guest OS to modify memory freely.
-* Eliminates VMExit traps during memory updates but introduces a severe performance penalty for TLB misses.
-* A single 2D page walk requires 24 references which degrades speed for highly dynamic datasets.
+- Uses hardware asissted parallel page tables, such as Intel EPT, allowing the guest OS to modify memory freely.
+- Eliminates VMExit traps during memory updates but introduces a severe performance penalty for TLB misses.
+- A single 2D page walk requires 24 references which degrades speed for highly dynamic datasets.
 $$
         \begin{equation} \label{eq:2dwalk}
         \begin{split}
@@ -202,24 +202,24 @@ Prevents physical memory exhaustion by utilizing the idle RAM of other DC server
 Because software-emulated I/O causes high overhead from buffer copying and constant VM Exits, systems use I/O Passthrough. This maps a physical device, like a 10G network card, directly into the guest VM's address space, completely bypassing the hypervisor for native speeds. However, this creates a critical security risk: a compromised guest could use DMA to overwrite the host's physical RAM. The solution is the IOMMU, or Input-Output Memory Management Unit. It acts as a dedicated MMU for peripherals, translating PCIe bus requests in real-time and instantly blocking any unauthorized DMA access, preventing hardware-based VM escape attacks.  -->
 # I/O virtualisation
 ## Overcoming DMA bottlenecks
-* Software emulated I/O suffers from high overhead due to continuous VMExits and complex buffer copying processes.
-* I/O Passthrough maps physical devices directly to guest memory thus operating at hardware native speeds.
-* IOMMU through Intel VT-d or AMD-Vi acts as a dedicated MMU for pheripherals, translating direct memory accesses instantly. It also actively block unauthorized DMA attempts protecting, in this way, the host memory from compromised guests.
+- Software emulated I/O suffers from high overhead due to continuous VMExits and complex buffer copying processes.
+- I/O Passthrough maps physical devices directly to guest memory thus operating at hardware native speeds.
+- IOMMU through Intel VT-d or AMD-Vi acts as a dedicated MMU for pheripherals, translating direct memory accesses instantly. It also actively block unauthorized DMA attempts protecting, in this way, the host memory from compromised guests.
 
 ---
 <!-- Virtualization completely redefines our attack surface. On the defensive side, it offers strong isolation, rapid snapshot restoration to recover from ransomware, and safe sandboxing for out-of-band monitoring. However, it introduces severe attack vectors. A VM Escape allows an attacker to exploit hypervisor emulation bugs to achieve root access on the host, compromising the entire infrastructure. Other threats include host-guest shared folder leaks, resource starvation causing Denial of Service, and virtual switch ARP poisoning. To mitigate these, modern enterprise architectures utilize micro-hypervisors to strip away vulnerable emulation code, alongside hardware-assisted encryption like AMD SEV and Intel SGX to encrypt VM RAM at the physical chip level.   -->
 # Security advantages
-* **Strong Isolation**: Virtual machines run in completly segmented spaces preventing attackers from accesing adjacent memory.
-* **Rapid Restoration**: Snapshot capabilities allow administrators to revert systems to a clean state in seconds after ransomware attacks or systme failures.
-* **Safe Sandboxing**: Provides completly isolated lab enviroments ideal for detonating malware with out-of-band monitoring and behavior analysis.
+- **Strong Isolation**: Virtual machines run in completly segmented spaces preventing attackers from accesing adjacent memory.
+- **Rapid Restoration**: Snapshot capabilities allow administrators to revert systems to a clean state in seconds after ransomware attacks or systme failures.
+- **Safe Sandboxing**: Provides completly isolated lab enviroments ideal for detonating malware with out-of-band monitoring and behavior analysis.
 
 ---
 # VM attack vectors
 
-* **VM Escape**: The most severe threat, where attackers exploit hypervisor emulation to gain full Ring 0 access on the host OS.
-* **Host-Guest Channels**: Shared clipboards and folders meant for convenience can be weaponized by malware to leak sensitive data outside the perimeter.
-* **Resource Starvation**: "Noisy neighbor" attacks execute infinite loops or massive I/O transactions to starve legimite VMs of physical resources.
-* **Packet sniffing**: Compromised virtual machines can execute ARP poisoning or MAC Flooding attacks to intercept traffic across shared internal virtual switches.
+- **VM Escape**: The most severe threat, where attackers exploit hypervisor emulation to gain full Ring 0 access on the host OS.
+- **Host-Guest Channels**: Shared clipboards and folders meant for convenience can be weaponized by malware to leak sensitive data outside the perimeter.
+- **Resource Starvation**: "Noisy neighbor" attacks execute infinite loops or massive I/O transactions to starve legimite VMs of physical resources.
+- **Packet sniffing**: Compromised virtual machines can execute ARP poisoning or MAC Flooding attacks to intercept traffic across shared internal virtual switches.
 ---
 
 # Conclusions
