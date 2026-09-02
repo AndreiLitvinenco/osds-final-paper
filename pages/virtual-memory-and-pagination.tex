@@ -22,9 +22,23 @@ In order to transcend this compromise, \emph{Gandhi et al.} proposed the \textbf
 \subsection{Remote paging}
 In datacenters or cloud enviroments, physical memory exhaustion on a physical host server represents a critical availability and performance issue. The classic techniques of moving the entire virtual machine, or live migration, or using the swap space on the disk introduces unacceptable latencies in an where operations should be blazing fast and more over it breaks the high availability principle. A better, more eficient cost-affective and high performance alternative was proposed in the paper \emph{"Hypervisor-Based Remote Paging"} \cite{iwvt08.pdf}. It proposes the idea of using the idle RAM of the other servers in the datacenter as an extension to the local memory, making use of high-speed networks such as Gigabit Ethernet with ultra fast protocols.
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{images/remote-paging-representation-diagram.png}
+    \caption{Remote page sharing \cite{iwvt08.pdf}.}
+    \label{fig:remote-paging-diagram}
+\end{figure}
+
 This system would work as a transparent caching layer between the local hypervisor and the virtual disk following this characteristics.
 
     \begin{itemize}
         \item \textbf{Nont intrusivness}: It does not require any modifications to the guest operating system's kernel or drivers. To the Guest OS, the guest physical memory appears completely unchanged and stable.
         \item \textbf{Hash-Comparing technique}: When the local hypervisor decides to send a page into the swap memory it first generates a unique hash of the page's contents. Before transmitting it over the network to a remote host, it compares the hash with the pages already stored remotely. If a duplicate is detected a technique like page deduplication will be used, as for example identical pages from similar operating systems, the hypervisor will therefore only save a pointer to the address of the stored pages, by doing so it saves bandwidth and storage space in the cluster \cite{iwvt08.pdf}. Beside the bandwidth issue this approach also reduces disk access by around 90 percentes.
     \end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{images/remote-paging-hashing.png}
+    \caption{Remote page hashing diagram \cite{iwvt08.pdf}.}
+    \label{fig:remote-paging-hashing-diagram}
+\end{figure}

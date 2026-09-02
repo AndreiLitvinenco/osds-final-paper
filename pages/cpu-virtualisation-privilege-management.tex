@@ -1,6 +1,13 @@
 \section{CPU virtualisation and privilege management}
 Processors in the x86 family implement four hardware protection rings, from Ring 0, the most privileged, reserved for the operating system kernel, to Ring 3, the least privileged, intended for user applications. Traditionally, protection rings ensure memory and resource isolation between user space and kernel space.
 
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.8\linewidth]{images/protection-rings-diagram.png}
+    \caption{CPU protection rings \cite{implementation-of-internetworking-with-host-internet-in-oracle-virtualbox-guest-virtual-machines.pdf}.}
+    \label{fig:cpu-protection-rings}
+\end{figure}
+
 \subsection{Ring deprivileging}
 To ensure complete control over system resources, the Virtual Machine Monitor must be the only software running with maximum privileges in Ring 0. This requires a technique called Ring Deprivileging for the guest virtual machines \cite{king.pdf, reuben2007virtual}. The VMM runs in Ring 0. The guest operating system is forced to run in a less privileged ring, such as Ring 1, in paravirtualized hypervisors like Xen, or directly in Ring 3, in hosted, Type II hypervisors. The user applications inside the VM continue to run in Ring 3, but they are isolated from their own Guest OS through software mechanisms managed by the VMM.
 
